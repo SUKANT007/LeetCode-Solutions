@@ -15,25 +15,51 @@ for (int i=0; i < size; i++)
 //User function Template for C++
 
 
+class data {
+    public:
+    
+    int value;
+    int apos;
+    int vpos;
+    
+    data(int v, int ap, int vp){
+        value = v;
+        apos = ap;
+        vpos = vp;
+    }
+};
+
+struct cmp {
+    bool operator()(data &d1, data &d2){
+        return d1.value > d2.value;
+    }
+};
+
 class Solution
 {
     public:
     //Function to merge k sorted arrays.
     vector<int> mergeKArrays(vector<vector<int>> arr, int K)
     {
-        priority_queue<int,vector<int>,greater<int>> minHeap;
+        priority_queue<data,vector<data>,cmp> minHeap;
         
         for(int i = 0; i < K; i++){
-            for(int j = 0; j < K; j++){
-                minHeap.push(arr[i][j]);
-            }
+            data d(arr[i][0],i,0);
+            minHeap.push(d);
         }
         
         vector<int> res;
         
-        for(int i = 0; i < K*K; i++){
-            res.push_back(minHeap.top());
+        while(!minHeap.empty()){
+            data cur = minHeap.top();
             minHeap.pop();
+            
+            res.push_back(cur.value);
+            
+            if(cur.vpos+1 < arr[cur.apos].size()){
+                data d(arr[cur.apos][cur.vpos+1],cur.apos,cur.vpos+1);
+                minHeap.push(d);
+            }
         }
         
         return res;
